@@ -138,6 +138,27 @@ fn all_tools_points_to_preferences_when_every_tool_is_hidden() {
     set(&mut h, &c, "hidden-tools", &every.join(","));
     assert!(shown(&mut h, &c, "No tools are shown") > 0);
     assert_eq!(shown(&mut h, &c, "Add comments"), 0);
+
+    // The expanded view says the same, not that a search found nothing.
+    set(&mut h, &c, "tools", "full");
+    assert!(shown(&mut h, &c, "No tools are shown") > 0);
+    assert_eq!(shown(&mut h, &c, "No tools match your search"), 0);
+}
+
+#[test]
+fn the_expanded_all_tools_view_leaves_out_hidden_tools_and_their_empty_categories() {
+    let (mut h, c) = harness();
+    set(&mut h, &c, "tools", "full");
+    assert!(buttons(&mut h, &c, "Compress a PDF") > 0);
+    assert!(shown(&mut h, &c, "Create & Edit") > 0);
+
+    set(&mut h, &c, "tool-preset", "read-comment");
+    assert_eq!(buttons(&mut h, &c, "Compress a PDF"), 0);
+    assert!(buttons(&mut h, &c, "Add comments") > 0);
+    assert!(buttons(&mut h, &c, "Compare files") > 0);
+    // Every tool under Create & Edit is hidden, so its heading goes too.
+    assert_eq!(shown(&mut h, &c, "Create & Edit"), 0);
+    assert!(shown(&mut h, &c, "Review & Compare") > 0);
 }
 
 #[test]
