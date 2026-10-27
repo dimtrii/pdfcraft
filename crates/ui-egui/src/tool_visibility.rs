@@ -97,17 +97,21 @@ fn preset_label(preset: &ToolPreset) -> &'static str {
 pub(crate) fn preferences_section(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens) {
     ui.label(egui::RichText::new(tl!("Tools shown in All tools")).font(theme::semibold(13.0)));
     ui.horizontal(|ui| {
-        ui.label(tl!("Preset"));
+        let preset_caption = ui.label(tl!("Preset"));
         let current = app.hidden_tools.preset();
         let selected = current.map_or(tl!("Custom selection"), preset_label);
-        egui::ComboBox::from_id_salt("tool-preset").selected_text(selected).show_ui(ui, |ui| {
-            for preset in TOOL_PRESETS {
-                if ui.selectable_label(current.is_some_and(|c| c.id == preset.id), preset_label(preset)).clicked() {
-                    app.hidden_tools = HiddenTools::of_preset(preset);
-                    ui.close();
+        egui::ComboBox::from_id_salt("tool-preset")
+            .selected_text(selected)
+            .show_ui(ui, |ui| {
+                for preset in TOOL_PRESETS {
+                    if ui.selectable_label(current.is_some_and(|c| c.id == preset.id), preset_label(preset)).clicked() {
+                        app.hidden_tools = HiddenTools::of_preset(preset);
+                        ui.close();
+                    }
                 }
-            }
-        });
+            })
+            .response
+            .labelled_by(preset_caption.id);
     });
     egui::Grid::new("shown-tools").num_columns(2).spacing([24.0, 2.0]).show(ui, |ui| {
         for (i, g) in TOOL_GROUPS.iter().enumerate() {
