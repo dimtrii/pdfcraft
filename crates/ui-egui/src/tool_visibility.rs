@@ -100,7 +100,7 @@ pub(crate) fn preferences_section(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &
         let preset_caption = ui.label(tl!("Preset"));
         let current = app.hidden_tools.preset();
         let selected = current.map_or(tl!("Custom selection"), preset_label);
-        egui::ComboBox::from_id_salt("tool-preset")
+        craft_ui::ComboBox::from_id_salt("tool-preset")
             .selected_text(selected)
             .show_ui(ui, |ui| {
                 for preset in TOOL_PRESETS {
